@@ -1,0 +1,135 @@
+<h1>
+  {{title}}
+</h1>
+<html>
+ <head>
+ <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://www.telerik.com/kendo-angular-ui/npm/node_modules//@progress/kendo-theme-default/dist/all.css" />
+    <!-- 1. Load libraries -->
+    <!-- Polyfill(s) for older browsers -->
+    <script src="https://unpkg.com/core-js/client/shim.min.js"></script>
+
+    <script src="https://unpkg.com/zone.js@0.8.11/dist/zone.js"></script>
+    <script src="https://unpkg.com/reflect-metadata@0.1.3/Reflect.js"></script>
+    <script src="https://unpkg.com/systemjs@0.19.27/dist/system.js"></script>
+
+    <!-- 2. Configure SystemJS -->
+    <script src="systemjs.config.js"></script>
+    <script>
+      System.import('app').catch(function(err){ console.error(err); });
+    </script>  
+<style>
+      html, body { overflow: hidden; }
+      body { font-family: "RobotoRegular",Helvetica,Arial,sans-serif; font-size: 14px; margin: 0; }
+      my-app { display: block; width: 100%; overflow: hidden; min-height: 80px; box-sizing: border-box; padding: 30px; }
+      my-app > .k-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+      .example-wrapper { min-height: 280px; align-content: flex-start; }
+      .example-wrapper p, .example-col p { margin: 0 0 10px; }
+      .example-wrapper p:first-child, .example-col p:first-child { margin-top: 0; }
+      .example-col { display: inline-block; vertical-align: top; padding-right: 20px; padding-bottom: 20px; }
+      .example-config { margin: 0 0 20px; padding: 20px; background-color: rgba(0,0,0,.03); border: 1px solid rgba(0,0,0,.08); }
+      .event-log { margin: 0; padding: 0; max-height: 100px; overflow-y: auto; list-style-type: none; border: 1px solid rgba(0,0,0,.08); background-color: #fff; }
+      .event-log li {margin: 0; padding: .3em; line-height: 1.2em; border-bottom: 1px solid rgba(0,0,0,.08); }
+      .event-log li:last-child { margin-bottom: -1px;}
+    </style>   
+   
+</head> 
+<body>  
+<!--<kendo-grid [data]="gridData" [height]="410">
+            <kendo-grid-column field="ProductID" title="ID" width="40">
+            </kendo-grid-column>
+            <kendo-grid-column field="ProductName" title="Name" width="250">
+            </kendo-grid-column>
+            <kendo-grid-column field="Category.CategoryName" title="Category">
+            </kendo-grid-column>
+            <kendo-grid-column field="UnitPrice" title="Price" width="80">
+            </kendo-grid-column>
+            <kendo-grid-column field="UnitsInStock" title="In stock" width="80">
+            </kendo-grid-column>
+            <kendo-grid-column field="Discontinued" title="Discontinued" width="120">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    <input type="checkbox" [checked]="dataItem.Discontinued" disabled/>
+                </ng-template>
+            </kendo-grid-column>
+        </kendo-grid>-->
+        <div class="example-config">
+          <button (click)="restoreColumns()" class="k-button">Restore hidden columns</button>
+        </div>
+
+        <kendo-grid [data]="gridData">
+          <ng-template ngFor [ngForOf]="columns" let-column>
+            <kendo-grid-column
+              field="{{column}}"
+              [hidden]="hiddenColumns.indexOf(column) > -1"
+            >
+              <ng-template kendoGridHeaderTemplate let-dataItem>
+                  {{dataItem.field}}
+                  <button
+                    (click)="hideColumn(dataItem.field)"
+                    class="k-button k-primary"
+                    style="float: right;"
+                  >
+                    Hide
+                  </button>
+              </ng-template>
+            </kendo-grid-column>
+          </ng-template>
+        </kendo-grid>
+        <!--<h4>Resize the output frame to see responsive behavior</h4>
+
+        <kendo-grid [data]="gridData" [height]="400">
+            <kendo-grid-column media="(max-width: 450px)" title="Items">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                     template for mobile 
+                    <h4 [class.discontinued]="dataItem.Discontinued">
+                        {{ dataItem.Name }}
+                    </h4>
+                    <dl>
+                        <dt>Category</dt>
+                        <dd>{{ dataItem.Category.CategoryName }}</dd>
+
+                        <dt>Price</dt>
+                        <dd>{{ dataItem.UnitPrice }}</dd>
+
+                        <dt>In stock</dt>
+                        <dd>{{ dataItem.UnitsInStock }}</dd>
+                    </dl>
+                </ng-template>
+            </kendo-grid-column>
+
+            columns for mid-size devices 
+            <kendo-grid-column
+                media="(min-width: 450px)"
+                field="ProductID" title="ID" width="40">
+            </kendo-grid-column>
+            <kendo-grid-column
+                media="(min-width: 450px)"
+                field="ProductName" title="Name">
+            </kendo-grid-column>
+            <kendo-grid-column
+                media="(min-width: 450px)"
+                field="Category.CategoryName" title="Category">
+            </kendo-grid-column>
+
+             additional columns on large devices 
+            <kendo-grid-column
+                media="(min-width: 680px)"
+                field="UnitPrice" title="Price" width="80">
+            </kendo-grid-column>
+            <kendo-grid-column
+                media="(min-width: 680px)"
+                field="UnitsInStock" title="In stock" width="80">
+            </kendo-grid-column>
+            <kendo-grid-column
+                media="(min-width: 680px)"
+                title="Discontinued" width="120">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    <input type="checkbox" [checked]="dataItem.Discontinued" disabled />
+                </ng-template>
+            </kendo-grid-column>
+        </kendo-grid>-->
+</body>
+</html>
